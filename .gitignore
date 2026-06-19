@@ -24,3 +24,6 @@ env/
 # OS Generated
 .DS_Store
 Thumbs.db
+
+__init__.py
+**__init__.py

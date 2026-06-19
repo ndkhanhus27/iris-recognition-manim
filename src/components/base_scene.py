@@ -3,6 +3,8 @@ import os
 import textwrap
 from contextlib import contextmanager
 from mutagen.mp3 import MP3
+import numpy as np
+import random
 from src.theme import *
 
 class BaseScene(MovingCameraScene):
@@ -88,7 +90,8 @@ class BaseScene(MovingCameraScene):
             
         self.current_audio_duration = MP3(audio_path).info.length
         self.current_audio_start_time = self.renderer.time
-        self.add_sound(audio_file)
+        print(f"[AUDIO] Successfully loaded {audio_path} (Duration: {self.current_audio_duration:.2f}s)")
+        self.add_sound(audio_path)
 
     def wait_audio(self, extra_wait=0.0):
         """
@@ -106,3 +109,51 @@ class BaseScene(MovingCameraScene):
             self.wait(wait_time)
         elif extra_wait > 0 and remaining_time <= 0:
             self.wait(extra_wait)
+
+    def create_vector_eye(self):
+        """Creates a highly detailed grayscale vector representation of an eye."""
+        eye_group = VGroup()
+
+        # Sclera (White background) - Reduced width to avoid cartoonish look
+        sclera = Ellipse(width=8.5, height=5.5, fill_color="#E0E0E0", fill_opacity=1, stroke_width=0)
+        eye_group.add(sclera)
+
+        # Iris base
+        iris_radius = 2.5
+        iris_base = Circle(radius=iris_radius, fill_color="#3a3a3a", fill_opacity=1, stroke_width=0)
+        eye_group.add(iris_base)
+
+        # Iris texture (complex)
+        np.random.seed(42) # Consistent pattern
+        random.seed(42)
+        for _ in range(150):
+            angle = random.uniform(0, 2 * PI)
+            r_start = random.uniform(0.7, 1.0)
+            r_end = random.uniform(1.2, 2.4)
+            
+            start = np.array([np.cos(angle)*r_start, np.sin(angle)*r_start, 0])
+            end = np.array([np.cos(angle)*r_end, np.sin(angle)*r_end, 0])
+            
+            line = Line(start, end, stroke_width=random.uniform(0.3, 1.5), stroke_color="#808080", stroke_opacity=random.uniform(0.1, 0.5))
+            eye_group.add(line)
+            
+        for _ in range(50):
+            angle = random.uniform(0, 2 * PI)
+            r_start = random.uniform(1.5, 2.3)
+            
+            # Draw crypts as elegant thin arcs, not solid dark blobs (avoids creepy/trypophobia look)
+            crypt = Ellipse(width=random.uniform(0.1, 0.4), height=random.uniform(0.05, 0.1), fill_opacity=0, stroke_color="#202020", stroke_width=1.5)
+            crypt.move_to(np.array([np.cos(angle)*r_start, np.sin(angle)*r_start, 0]))
+            crypt.rotate(angle + PI/2)
+            eye_group.add(crypt)
+
+        # Pupil
+        pupil = Circle(radius=0.6, fill_color=BLACK, fill_opacity=1, stroke_width=0)
+        eye_group.add(pupil)
+
+        # Catchlight (Reflection) - Make it smaller, more realistic
+        catchlight = Circle(radius=0.08, fill_color=WHITE, fill_opacity=0.8, stroke_width=0)
+        catchlight.move_to(RIGHT * 0.4 + UP * 0.4)
+        eye_group.add(catchlight)
+
+        return eye_group

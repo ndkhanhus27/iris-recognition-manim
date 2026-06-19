@@ -17,7 +17,7 @@ class Scene1Intro(BaseScene):
         Shot 3 (22s-35s): Focus on the Iris — zoom, scan rings, annotations
     
     All objects are VMobject (VGroup-compatible).
-    SVG assets loaded from assets/scene_1_intro/.
+    SVG assets loaded from assets/images/scene1_intro/.
     No raster images. No pipeline.
     """
 
@@ -266,13 +266,13 @@ class Scene1Intro(BaseScene):
         # ── Audio 2b: "Among these natural traits..." ──
         self.play_audio("assets/audios/scene1_intro/2b.mp3")
 
-        fingerprint_svg = SVGMobject("assets/scene_1_intro/fingerprint.svg")
+        fingerprint_svg = SVGMobject("assets/images/scene1_intro/fingerprint.svg")
         fingerprint_svg.set_color(SECONDARY_COLOR).scale_to_fit_height(2.0)
 
-        face_svg = SVGMobject("assets/scene_1_intro/face.svg")
+        face_svg = SVGMobject("assets/images/scene1_intro/face.svg")
         face_svg.set_color(SECONDARY_COLOR).scale_to_fit_height(2.0)
 
-        iris_svg = SVGMobject("assets/scene_1_intro/iris.svg")
+        iris_svg = SVGMobject("assets/images/scene1_intro/iris.svg")
         iris_svg.set_color(PRIMARY_COLOR).scale_to_fit_height(2.0)
 
         fp_label = Text("Fingerprint", font=MAIN_FONT, font_size=SMALL_FONT_SIZE, color=TEXT_COLOR)
