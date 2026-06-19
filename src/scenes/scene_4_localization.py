@@ -112,9 +112,9 @@ class Scene4Localization(BaseScene):
         self.wait(0.5)
 
         # ----------------------------------------------------
-        # SHOT 3: Searching for the Pupil Boundary (20s - 40s)
+        # SHOT 3: Searching for the Pupil Boundary
         # ----------------------------------------------------
-        self.play_audio("assets/audios/scene4_localization/3.mp3", fallback_duration=6.0)
+        self.play_audio("assets/audios/scene4_localization/3.mp3", fallback_duration=8.0)
         
         # Candidate Center
         candidate_center = Dot(color=ERROR_COLOR, radius=0.06).move_to(eye_image.get_center() + LEFT*0.5 + UP*0.3)
@@ -148,29 +148,57 @@ class Scene4Localization(BaseScene):
             run_time=2.0, rate_func=there_and_back
         )
         
-        # Approaching true center
+        self.wait_audio()
+
+        # ----------------------------------------------------
+        # SHOT 4: Measuring brightness
+        # ----------------------------------------------------
+        self.play_audio("assets/audios/scene4_localization/4.mp3", fallback_duration=9.0)
+        
+        # More searching
+        self.play(
+            radius_tracker.animate.set_value(0.8),
+            center_tracker.animate.set_value(0.4),
+            run_time=2.0, rate_func=there_and_back
+        )
+        
+        # Approaching true center slightly
         true_pupil_center = eye_image.get_center()
+        
+        # Let's show measuring brightness by highlighting the scan circle
+        self.play(
+            scan_circle.animate.set_stroke(width=4, color=YELLOW),
+            run_time=1.0, rate_func=there_and_back
+        )
+        
+        self.play(
+            candidate_center.animate.move_to(true_pupil_center + RIGHT*0.1 + UP*0.1),
+            center_label.animate.move_to(true_pupil_center + RIGHT*0.1 + UP*0.3),
+            center_tracker.animate.set_value(0),
+            radius_tracker.animate.set_value(0.4),
+            run_time=1.5
+        )
+        
+        self.wait_audio()
+
+        # ----------------------------------------------------
+        # SHOT 5: Boundary Locking (Pupil)
+        # ----------------------------------------------------
+        self.play_audio("assets/audios/scene4_localization/5.mp3", fallback_duration=12.0)
+        
+        # Approaching true center completely
         self.play(
             candidate_center.animate.move_to(true_pupil_center),
             center_label.animate.move_to(true_pupil_center + UP*0.2),
-            center_tracker.animate.set_value(0),
-            radius_tracker.animate.set_value(0.3),
-            run_time=1.5
+            run_time=1.0
         )
         
         true_pupil_radius = 0.6 * 0.8 # eye scale is 0.8
         self.play(
             radius_tracker.animate.set_value(true_pupil_radius),
-            run_time=1.0
+            run_time=1.5
         )
-        
-        self.wait_audio()
         self.wait(0.5)
-
-        # ----------------------------------------------------
-        # SHOT 4: Boundary Locking (40s - 55s)
-        # ----------------------------------------------------
-        self.play_audio("assets/audios/scene4_localization/4.mp3", fallback_duration=7.0)
         
         # Snap!
         pupil_circle = Circle(radius=true_pupil_radius, color=PRIMARY_COLOR, stroke_width=4).move_to(true_pupil_center)
@@ -187,10 +215,10 @@ class Scene4Localization(BaseScene):
             FadeIn(lock_icon, scale=0.5),
             run_time=0.5
         )
-        # Pulse effect
+        # Pulse effect for "sharp intensity change"
         self.play(
             pupil_circle.animate.set_stroke(width=8, opacity=0.5),
-            rate_func=there_and_back, run_time=0.5
+            rate_func=there_and_back, run_time=0.8
         )
         
         self.wait_audio()
@@ -198,9 +226,9 @@ class Scene4Localization(BaseScene):
         self.wait(0.5)
 
         # ----------------------------------------------------
-        # SHOT 5: Detecting the Outer Iris Boundary (55s - 70s)
+        # SHOT 6: Detecting the Outer Iris Boundary
         # ----------------------------------------------------
-        self.play_audio("assets/audios/scene4_localization/5.mp3", fallback_duration=12.0)
+        self.play_audio("assets/audios/scene4_localization/6.mp3", fallback_duration=11.0)
         
         outer_radius_tracker = ValueTracker(1.0)
         outer_scan_circle = always_redraw(
@@ -244,9 +272,9 @@ class Scene4Localization(BaseScene):
         self.wait(0.5)
 
         # ----------------------------------------------------
-        # SHOT 6: Handling Occlusion and Reflections (70s - 85s)
+        # SHOT 7: Handling Occlusion and Reflections
         # ----------------------------------------------------
-        self.play_audio("assets/audios/scene4_localization/6.mp3", fallback_duration=10.0)
+        self.play_audio("assets/audios/scene4_localization/7.mp3", fallback_duration=12.0)
         
         # Save current scene state to a group so we can split
         main_scene = VGroup(eye_image, pupil_circle, limbic_circle, candidate_center)
@@ -291,25 +319,31 @@ class Scene4Localization(BaseScene):
         top_arc = Arc(radius=occ_iris_radius, start_angle=PI/4, angle=PI/2, color=ERROR_COLOR, stroke_width=6, arc_center=occ_eye.get_center())
         occ_cross = Cross(top_arc, stroke_color=ERROR_COLOR, stroke_width=4).scale(0.5)
         
-        # Integration path (lateral arcs)
-        left_arc = Arc(radius=occ_iris_radius, start_angle=3*PI/4, angle=PI/2, color=SUCCESS_COLOR, stroke_width=5, arc_center=occ_eye.get_center())
-        right_arc = Arc(radius=occ_iris_radius, start_angle=-PI/4, angle=PI/2, color=SUCCESS_COLOR, stroke_width=5, arc_center=occ_eye.get_center())
-        
         # Right Panel (Reflection) overlays
         refl_cross = Cross(stroke_color=ERROR_COLOR, stroke_width=8).scale(0.3).move_to(glare.get_center())
-        occ_cross = Cross(stroke_color=ERROR_COLOR, stroke_width=8).scale(0.3).move_to(occ_eye.get_center() + UP*0.6)
-
+        
         self.play(
             Create(top_arc), Create(occ_cross),
             Create(refl_cross),
             run_time=1.0
         )
+        
+        self.wait_audio()
+
+        # ----------------------------------------------------
+        # SHOT 8: Masking and Final Result
+        # ----------------------------------------------------
+        self.play_audio("assets/audios/scene4_localization/8.mp3", fallback_duration=10.0)
+        
+        # Integration path (lateral arcs)
+        left_arc = Arc(radius=occ_iris_radius, start_angle=3*PI/4, angle=PI/2, color=SUCCESS_COLOR, stroke_width=5, arc_center=occ_eye.get_center())
+        right_arc = Arc(radius=occ_iris_radius, start_angle=-PI/4, angle=PI/2, color=SUCCESS_COLOR, stroke_width=5, arc_center=occ_eye.get_center())
+        
         self.play(
             Create(left_arc), Create(right_arc),
             run_time=1.0
         )
-        
-        self.wait_audio()
+        self.wait(1.0)
         
         self.play(
             FadeOut(occ_group), FadeOut(refl_group),
@@ -318,12 +352,6 @@ class Scene4Localization(BaseScene):
             FadeOut(left_arc), FadeOut(right_arc),
             run_time=0.8
         )
-        self.wait(0.5)
-
-        # ----------------------------------------------------
-        # SHOT 7: Final Localization Result (85s - 90s)
-        # ----------------------------------------------------
-        self.play_audio("assets/audios/scene4_localization/7.mp3", fallback_duration=6.0)
         
         # Bring main scene back to ORIGIN to avoid formula overlaps
         self.play(
@@ -357,13 +385,7 @@ class Scene4Localization(BaseScene):
             run_time=0.8
         )
         
-        self.wait_audio()
-        self.wait(0.5)
-
-        # ----------------------------------------------------
-        # Scene Ending Transition (Shot 8: Bridge to Normalization)
-        # ----------------------------------------------------
-        self.play_audio("assets/audios/scene4_localization/8.mp3", fallback_duration=6.0)
+        self.wait(1.0)
         
         self.play(
             FadeOut(check_icon), FadeOut(done_text), FadeOut(extract_label),
