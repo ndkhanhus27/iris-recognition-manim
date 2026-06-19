@@ -1,9 +1,6 @@
 # Manim Media Output
 media/
 
-# Audio Assets 
-assets/audios/
-
 # Python Cache
 __pycache__/
 *.py[cod]
