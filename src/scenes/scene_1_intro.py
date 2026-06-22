@@ -180,9 +180,6 @@ class Scene1Intro(BaseScene):
     # MAIN CONSTRUCT
     # ═════════════════════════════════════════════
     def construct(self):
-        # Display chapter title
-        self.play_scene_title("1. Introduction")
-
         # ==========================================
         # SHOT 1 — Traditional Authentication
         # ==========================================

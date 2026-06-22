@@ -65,3 +65,49 @@ FOOTER_POS = DOWN * 3.5
 def setup_theme():
     """Apply global configurations to Manim."""
     config.background_color = BG_COLOR
+
+# ==========================================
+# 6. GLOBAL TEXT OVERRIDE (LATEX FALLBACK)
+# ==========================================
+# Override Manim's Text class to use Tex globally, avoiding system font rendering errors.
+_OriginalText = Text
+
+class Text(Tex):
+    def __init__(self, text, font=None, font_size=36, color=TEXT_COLOR, weight="NORMAL", **kwargs):
+        # Scale up font size to match Pango's default visual size
+        adjusted_size = int(font_size * 1.25)
+        
+        s = str(text)
+        # Escape special LaTeX characters
+        s = s.replace("\\", r"\textbackslash{}")
+        s = s.replace("\n", r"\\")
+        for ch in ["%", "_", "&", "#", "$", "{", "}"]:
+            if ch != "\\": # Handled above
+                s = s.replace(ch, "\\" + ch)
+        
+        # Handle special Unicode characters used in the project
+        s = s.replace("°", r"$^\circ$")
+        s = s.replace("·", r"$\cdot$")
+        s = s.replace("—", r"---")
+        s = s.replace("ϕ", r"$\phi$")
+        s = s.replace("θ", r"$\theta$")
+        s = s.replace("●", r"$\bullet$")
+        s = s.replace("≠", r"$\neq$")
+        s = s.replace("×", r"$\times$")
+        s = s.replace("\u2192", r"$\rightarrow$")
+        s = s.replace("\u2265", r"$\ge$")
+        s = s.replace("\u2264", r"$\le$")
+        s = s.replace("→", r"$\rightarrow$")
+        s = s.replace("≥", r"$\ge$")
+        s = s.replace("≤", r"$\le$")
+        
+        # Handle font families
+        if font == MONO_FONT or font == "Consolas":
+            inner = rf"\texttt{{{s}}}"
+        else:
+            inner = rf"\textsf{{{s}}}"
+            
+        if weight == BOLD or weight == "BOLD":
+            inner = rf"\textbf{{{inner}}}"
+            
+        super().__init__(inner, font_size=adjusted_size, color=color, **kwargs)
