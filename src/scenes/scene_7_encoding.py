@@ -5,7 +5,13 @@ from manim import *
 
 sys.path.insert(0, os.getcwd())
 from src.components.base_scene import BaseScene
-from src.components.formulas import *
+from src.components.formulas import (
+    FORMULA_COMPLEX_RE,
+    FORMULA_COMPLEX_IM,
+    FORMULA_COMPLEX_Z,
+    FORMULA_DAUGMAN_ENCODING,
+    FORMULA_BIT_RULES,
+)
 from src.theme import *
 
 # ─── Layout constants ─────────────────────────────────────────────────────────
@@ -45,12 +51,12 @@ class Scene7Encoding(BaseScene):
         self.play(Create(hl_rect), run_time=0.3)
 
         # ── Fix 1: Correct formula derivation (stepped) ───────────────────
-        re_eq  = MathTex(r"\operatorname{Re} = A\cos\phi", font_size=32, color=REAL_COLOR)
-        im_eq  = MathTex(r"\operatorname{Im} = A\sin\phi", font_size=32, color=IMAG_COLOR)
+        re_eq  = MathTex(FORMULA_COMPLEX_RE, font_size=32, color=REAL_COLOR)
+        im_eq  = MathTex(FORMULA_COMPLEX_IM, font_size=32, color=IMAG_COLOR)
         VGroup(re_eq, im_eq).arrange(RIGHT, buff=1.0).move_to(DOWN * 0.6)
 
         comb_eq = MathTex(
-            r"z = \operatorname{Re} + j\operatorname{Im} = A e^{j\phi}",
+            FORMULA_COMPLEX_Z,
             font_size=36, color=PHASE_COLOR
         ).move_to(DOWN * 1.6)
 
@@ -59,9 +65,7 @@ class Scene7Encoding(BaseScene):
 
         # ── Daugman formula watermark (Moved to bottom & cleaned up) ──────
         daugman_formula = MathTex(
-            r"h_{\{Re,Im\}} = ", 
-            r"\operatorname{sgn}_{\{Re,Im\}}", 
-            r"\left( \int_{\rho}\int_{\phi} I(\rho,\phi)\,e^{-i\omega(\theta_0-\phi)} e^{-\frac{(r_0-\rho)^2}{\alpha^2}} e^{-\frac{(\theta_0-\phi)^2}{\beta^2}} \rho\, d\rho\, d\phi \right)",
+            *FORMULA_DAUGMAN_ENCODING,
             font_size=22, color=MUTED_TEXT_COLOR
         )
         daugman_panel = VGroup(
@@ -366,8 +370,8 @@ class Scene7Encoding(BaseScene):
     # ─────────────────────────────────────────────────────────────────────────
 
     def _section_title(self, text: str, color: str = None) -> "Text":
-        color = color or TEXT_COLOR
-        return Text(text, font=MAIN_FONT, font_size=34, color=color, weight=BOLD).move_to(UP * 3.2)
+        """Delegates to BaseScene._section_title() — kept as alias for compatibility."""
+        return super()._section_title(text, color)
 
     def _build_complex_plane(self, center, half: float) -> VGroup:
         axes = VGroup(
@@ -409,14 +413,8 @@ class Scene7Encoding(BaseScene):
 
     def _build_rule_table(self, center) -> VGroup:
         rules = VGroup(
-            MathTex(r"\operatorname{Re}\ge0\;\Rightarrow\;\text{Bit}_1=1",
-                    font_size=20, color=REAL_COLOR),
-            MathTex(r"\operatorname{Re}<0\;\Rightarrow\;\text{Bit}_1=0",
-                    font_size=20, color=REAL_COLOR),
-            MathTex(r"\operatorname{Im}\ge0\;\Rightarrow\;\text{Bit}_2=1",
-                    font_size=20, color=IMAG_COLOR),
-            MathTex(r"\operatorname{Im}<0\;\Rightarrow\;\text{Bit}_2=0",
-                    font_size=20, color=IMAG_COLOR),
+            *[MathTex(r, font_size=20, color=REAL_COLOR if "Re" in r else IMAG_COLOR)
+              for r in FORMULA_BIT_RULES]
         ).arrange(DOWN, buff=0.2).move_to(center)
         bg = SurroundingRectangle(rules, color=PLANE_COLOR, stroke_width=1.5,
                                   fill_color=BG_COLOR, fill_opacity=0.92,

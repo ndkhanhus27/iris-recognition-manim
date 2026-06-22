@@ -5,7 +5,12 @@ from manim import *
 
 sys.path.insert(0, os.getcwd())
 from src.components.base_scene import BaseScene
-from src.components.formulas import *
+from src.components.formulas import (
+    FORMULA_RUBBER_SHEET_OVERVIEW,
+    FORMULA_RUBBER_SHEET_X,
+    FORMULA_RUBBER_SHEET_Y,
+    FORMULA_POLAR_RANGE,
+)
 from src.theme import *
 
 
@@ -279,9 +284,7 @@ class Scene5Normalization(BaseScene):
         # ── Equations (right column) ──────────────────────────────────────
         # I(x(r,θ), y(r,θ)) → I(r,θ)
         eq0 = MathTex(
-            r"I(x(r,\theta),\ y(r,\theta))",
-            r"\ \longrightarrow\ ",
-            r"I(r,\theta)",
+            *FORMULA_RUBBER_SHEET_OVERVIEW,
             font_size=36
         )
         eq0[0].set_color(MUTED_TEXT_COLOR)
@@ -289,15 +292,15 @@ class Scene5Normalization(BaseScene):
         eq0[2].set_color(PRIMARY_COLOR)
 
         eq_x = MathTex(
-            r"x(r,\theta) = (1-r)\,x_p(\theta) + r\,x_s(\theta)",
+            FORMULA_RUBBER_SHEET_X,
             font_size=34, color=TEXT_COLOR
         )
         eq_y = MathTex(
-            r"y(r,\theta) = (1-r)\,y_p(\theta) + r\,y_s(\theta)",
+            FORMULA_RUBBER_SHEET_Y,
             font_size=34, color=TEXT_COLOR
         )
         eq_range = MathTex(
-            r"r \in [0,1],\quad \theta \in [0,2\pi]",
+            FORMULA_POLAR_RANGE,
             font_size=30, color=MUTED_TEXT_COLOR
         )
 
@@ -546,7 +549,7 @@ class Scene5Normalization(BaseScene):
         )
 
         # ── Checkmark ────────────────────────────────────────────────────
-        check  = self._create_check_icon().scale(0.65).move_to(UP * 2.8)
+        check  = self.create_check_icon().scale(0.65).move_to(UP * 2.8)
         done_t = Text(
             "Normalization Complete",
             font=MAIN_FONT, font_size=30, color=SUCCESS_COLOR
@@ -570,12 +573,8 @@ class Scene5Normalization(BaseScene):
     # ─────────────────────────────────────────────────────────────────────────
 
     def _section_title(self, text: str, color: str = None) -> "Text":
-        """Centered top title strip."""
-        color = color or TEXT_COLOR
-        return Text(
-            text, font=MAIN_FONT, font_size=34,
-            color=color, weight=BOLD
-        ).move_to(UP * 3.2)
+        """Delegates to BaseScene._section_title() — kept as alias for compatibility."""
+        return super()._section_title(text, color)
 
     def _build_eye_diagram(
         self, pupil_r: float, iris_r: float, caption: str
@@ -684,18 +683,5 @@ class Scene5Normalization(BaseScene):
         return lines
 
     def _create_check_icon(self) -> VGroup:
-        """Native vector check mark (same style as Scene 4)."""
-        circle = Circle(
-            radius=0.9,
-            fill_color=SUCCESS_COLOR, fill_opacity=0.18,
-            stroke_color=SUCCESS_COLOR, stroke_width=4
-        )
-        check  = VGroup(
-            Line(LEFT * 0.35 + UP * 0.08,
-                 LEFT * 0.08 + DOWN * 0.28,
-                 stroke_color=SUCCESS_COLOR, stroke_width=8),
-            Line(LEFT * 0.08 + DOWN * 0.28,
-                 RIGHT * 0.45 + UP * 0.38,
-                 stroke_color=SUCCESS_COLOR, stroke_width=8)
-        ).move_to(circle.get_center())
-        return VGroup(circle, check)
+        """Delegates to inherited BaseScene.create_check_icon()."""
+        return self.create_check_icon()

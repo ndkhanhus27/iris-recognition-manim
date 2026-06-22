@@ -6,6 +6,11 @@ from manim import *
 sys.path.insert(0, os.getcwd())
 from src.components.base_scene import BaseScene
 from src.theme import *
+from src.components.formulas import (
+    FORMULA_HD_NUMERATOR,
+    FORMULA_HD_DENOMINATOR,
+    FORMULA_HD_NORM,
+)
 
 AUDIO_DIR = "assets/audios/scene8_matching"
 
@@ -225,12 +230,12 @@ class Scene8Matching(BaseScene):
         # Build fraction: numer / bar / denom, then place HD= label to the left
         hd_eq  = MathTex(r"HD =", font_size=52, color=CODE_A_COLOR)
         numer  = MathTex(
-            r"|\,(\text{code}_A \oplus \text{code}_B)\cap\text{mask}_A\cap\text{mask}_B\,|",
+            FORMULA_HD_NUMERATOR,
             font_size=34, color=MISMATCH_COLOR
         )
         bar    = Line(LEFT * 4.6, RIGHT * 4.6, color=TEXT_COLOR, stroke_width=2.5)
         denom  = MathTex(
-            r"|\,\text{mask}_A \cap \text{mask}_B\,|",
+            FORMULA_HD_DENOMINATOR,
             font_size=34, color=MATCH_COLOR
         )
         frac   = VGroup(numer, bar, denom).arrange(DOWN, buff=0.35)
@@ -365,8 +370,15 @@ class Scene8Matching(BaseScene):
     # ──────────────────────────────────────────────────────────────────────────
 
     def _sec(self, text: str, color: str = None) -> Tex:
-        """Section subtitle at top of frame."""
-        return Tex(rf"\textsf{{\textbf{{{text}}}}}", font_size=42, color=color or TEXT_COLOR).move_to(UP * 3.2)
+        """
+        Section subtitle at top of frame.
+        Uses Tex with \\textsf{\\textbf{}} for math-safe rendering.
+        Delegates positioning to BaseScene._section_title convention (UP * 3.2).
+        """
+        return Tex(
+            rf"\textsf{{\textbf{{{text}}}}}",
+            font_size=42, color=color or TEXT_COLOR
+        ).move_to(UP * 3.2)
 
     def _cell(self, bit_val: int, color: str, w: float = 0.52, h: float = 0.52) -> VGroup:
         """Single bit cell: rounded rectangle + digit label."""
@@ -417,7 +429,7 @@ class Scene8Matching(BaseScene):
     def _norm_panel(self) -> VGroup:
         """Brief normalized Hamming Distance formula panel."""
         formula = MathTex(
-            r"HD_{norm} = 0.5 - (0.5 - HD)\,\sqrt{\dfrac{n}{911}}",
+            FORMULA_HD_NORM,
             font_size=24, color=MUTED_TEXT_COLOR
         )
         note = Tex(r"\textsf{Statistical normalization for varying valid bit count $n$}",

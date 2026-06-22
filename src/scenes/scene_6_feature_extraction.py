@@ -5,7 +5,7 @@ from manim import *
 
 sys.path.insert(0, os.getcwd())
 from src.components.base_scene import BaseScene
-from src.components.formulas import *
+from src.components.formulas import FORMULA_GABOR_GAUSS, FORMULA_GABOR_SIN
 from src.theme import *
 
 # ─── Layout constants ───────────────────────────────────────────────────────
@@ -122,14 +122,14 @@ class Scene6FeatureExtraction(BaseScene):
         eq_label = Text("G(x, y)  =", font=MAIN_FONT, font_size=34, color=GABOR_COLOR, weight=BOLD).move_to(L_COL + UP * 1.1)
 
         eq_gauss = MathTex(
-            r"\underbrace{\exp\!\left(-\frac{x'^2+\gamma^2 y'^2}{2\sigma^2}\right)}",
+            FORMULA_GABOR_GAUSS,
             font_size=36, color=REAL_COLOR
         ).move_to(L_COL + DOWN * 0.05)
 
         eq_dot = MathTex(r"\times", font_size=44, color=MUTED_TEXT_COLOR).move_to(L_COL + DOWN * 0.95)
 
         eq_sinusoid = MathTex(
-            r"\underbrace{\exp\!\left(j\!\left(2\pi\frac{x'}{\lambda}+\phi\right)\right)}",
+            FORMULA_GABOR_SIN,
             font_size=36, color=IMAG_COLOR
         ).move_to(L_COL + DOWN * 1.95)
 
@@ -485,8 +485,8 @@ class Scene6FeatureExtraction(BaseScene):
     # ─────────────────────────────────────────────────────────────────────────
 
     def _section_title(self, text: str, color: str = None) -> "Text":
-        color = color or TEXT_COLOR
-        return Text(text, font=MAIN_FONT, font_size=34, color=color, weight=BOLD).move_to(UP * 3.2)
+        """Delegates to BaseScene._section_title() — kept as alias for compatibility."""
+        return super()._section_title(text, color)
 
     def _build_norm_strip_known_ridges(self, width: float, height: float) -> VGroup:
         fill = Rectangle(width=width, height=height, fill_color=SECONDARY_COLOR, fill_opacity=0.18, stroke_width=0)

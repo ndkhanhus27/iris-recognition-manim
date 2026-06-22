@@ -110,6 +110,45 @@ class BaseScene(MovingCameraScene):
         elif extra_wait > 0 and remaining_time <= 0:
             self.wait(extra_wait)
 
+    # ── Shared UI helpers ─────────────────────────────────────────────────────
+
+    def _section_title(self, text: str, color: str = None) -> "Text":
+        """
+        Centered top-strip section title used across multiple scenes.
+        Placed at UP * 3.2 by convention.
+        """
+        from src.theme import TEXT_COLOR, MAIN_FONT
+        color = color or TEXT_COLOR
+        return Text(
+            text, font=MAIN_FONT, font_size=34,
+            color=color, weight=BOLD
+        ).move_to(UP * 3.2)
+
+    def create_check_icon(self, radius: float = 0.9) -> "VGroup":
+        """
+        Native vector check-mark inside a circle.
+        Consistent style used in Scene 4 and Scene 5.
+        """
+        from src.theme import SUCCESS_COLOR
+        circle = Circle(
+            radius=radius,
+            fill_color=SUCCESS_COLOR, fill_opacity=0.18,
+            stroke_color=SUCCESS_COLOR, stroke_width=4
+        )
+        check = VGroup(
+            Line(
+                LEFT * 0.35 * radius + UP * 0.08 * radius,
+                LEFT * 0.08 * radius + DOWN * 0.28 * radius,
+                stroke_color=SUCCESS_COLOR, stroke_width=8
+            ),
+            Line(
+                LEFT * 0.08 * radius + DOWN * 0.28 * radius,
+                RIGHT * 0.45 * radius + UP * 0.38 * radius,
+                stroke_color=SUCCESS_COLOR, stroke_width=8
+            )
+        ).move_to(circle.get_center())
+        return VGroup(circle, check)
+
     def create_vector_eye(self):
         """Creates a highly detailed grayscale vector representation of an eye."""
         eye_group = VGroup()

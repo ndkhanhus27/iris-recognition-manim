@@ -371,7 +371,7 @@ class Scene4Localization(BaseScene):
         extract_label = Text("Extracted Iris Region", font=MAIN_FONT, font_size=SMALL_FONT_SIZE, color=PRIMARY_COLOR, weight=BOLD).next_to(outer_bound, UP, buff=0.5)
         
         # Restore checkmark as requested
-        check_icon = self.create_check_icon().scale(0.8).move_to(RIGHT * 4.0)
+        check_icon = self.create_check_icon(radius=0.8).move_to(RIGHT * 4.0)
         done_text = Text("Localization Complete", font=MAIN_FONT, font_size=SMALL_FONT_SIZE, color=SUCCESS_COLOR).next_to(check_icon, DOWN)
         
         self.play(
@@ -410,7 +410,7 @@ class Scene4Localization(BaseScene):
     # HELPER METHODS (Native Vector Graphics)
     # ----------------------------------------------------
     def create_lock_icon(self):
-        """Creates a native vector lock icon."""
+        """Creates a native vector lock icon (scene-specific)."""
         body = RoundedRectangle(width=1.0, height=0.8, corner_radius=0.1, fill_color=PRIMARY_COLOR, fill_opacity=1, stroke_width=0)
         shackle = Arc(radius=0.3, start_angle=0, angle=PI, color=TEXT_COLOR, stroke_width=10)
         shackle.next_to(body, UP, buff=-0.1)
@@ -423,12 +423,4 @@ class Scene4Localization(BaseScene):
             fill_color=BG_COLOR, fill_opacity=1, stroke_width=0
         )
         return VGroup(shackle, body, keyhole, keyhole_base)
-        
-    def create_check_icon(self):
-        """Creates a native vector check mark icon."""
-        circle = Circle(radius=1.0, fill_color=SUCCESS_COLOR, fill_opacity=0.2, stroke_color=SUCCESS_COLOR, stroke_width=4)
-        check = VGroup(
-            Line(LEFT*0.4 + UP*0.1, LEFT*0.1 + DOWN*0.3, stroke_color=SUCCESS_COLOR, stroke_width=8),
-            Line(LEFT*0.1 + DOWN*0.3, RIGHT*0.5 + UP*0.4, stroke_color=SUCCESS_COLOR, stroke_width=8)
-        ).move_to(circle.get_center())
-        return VGroup(circle, check)
+    # Note: create_check_icon() is inherited from BaseScene.
